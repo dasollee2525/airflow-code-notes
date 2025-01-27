@@ -10,11 +10,11 @@ with DAG(
     catchup=False,
     schedule=None
 ) as dag:
-    '''서울시 공공자전거 대여소 정보'''
-    tb_cycle_station_info = SimpleHttpOperator(
-        task_id = 'tb_cycle_station_info',
-        http_conn_id = 'openapi.seoul.go.kr',
-        endpoint='{{var.value.apikey_openapi_seoul_go_kr}}/json/tbCycleStationInfo/1/10/',
+    '''서울시 야겸명소 정보'''
+    seoul_night_view_info = SimpleHttpOperator(
+        task_id = 'seoul_night_view_info',
+        http_conn_id = 'openapi.seoul.go.kr:8080',
+        endpoint='{{var.value.apikey_openapi_seoul_go_kr}}/xml/viewNightSpot/1/5/',
         method='GET',
         headers={'Content-Type' : 'application/json',
         'charset':'utf-8',
@@ -25,9 +25,9 @@ with DAG(
     @task(task_id='python_2')
     def python_2(**kwargs):
         ti=kwargs['ti']
-        rslt = ti.xcom_pull(task_ids='tb_cycle_station_info')
+        rslt = ti.xcom_pull(task_ids='seoul_night_view_info')
         import json
         from pprint import pprint
 
         pprint(json.loads(rslt))
-    tb_cycle_station_info >> python_2()
+    seoul_night_view_info >> python_2()
