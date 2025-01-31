@@ -13,7 +13,7 @@ with DAG(
     '''서울시 야겸명소 정보'''
     seoul_night_view_info = SimpleHttpOperator(
         task_id = 'seoul_night_view_info',
-        http_conn_id = 'openapi.seoul.go.kr:8080',
+        http_conn_id = 'openapi.seoul.go.kr',
         endpoint='{{var.value.apikey_openapi_seoul_go_kr}}/xml/viewNightSpot/1/5/',
         method='GET',
         headers={'Content-Type' : 'application/json',
@@ -26,8 +26,6 @@ with DAG(
     def python_2(**kwargs):
         ti=kwargs['ti']
         rslt = ti.xcom_pull(task_ids='seoul_night_view_info')
-        import json
-        from pprint import pprint
+        print("XCom pulled value:", rslt)
 
-        pprint(json.loads(rslt))
     seoul_night_view_info >> python_2()

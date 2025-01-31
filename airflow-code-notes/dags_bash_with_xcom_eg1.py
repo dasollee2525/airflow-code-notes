@@ -25,7 +25,7 @@ with DAG(
             'RETURN_VALUE':"{{ti.xcom_pull(task_ids='bash_push)}}"
         },
         bash_command="echo $PUSHED_VALUE && echo $RETURN_VALUE ",
-        do_xcom_push=False
+        do_xcom_push=False #값이 xcom에 올라가지 않도록 함
     )
 
     bash_push >> bash_pull
