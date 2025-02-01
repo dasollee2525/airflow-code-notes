@@ -9,11 +9,12 @@ with DAG(
     catchup=False
 ) as dag:
 
-    def insrt_postgres(ip, port, dbname, user, passwd, **kwargs):
-        import psycopg2
+    def insrt_postgres(postgres_conn_id, **kwargs):
+        from airflow.providers.postgres.hooks.postgres import PostgresHook
         from contextlib import closing
-
-        with closing(psycopg2.connect(host=ip, dbname=dbname, user=user, password=passwd, port=int(port))) as conn:
+        #session 정보를 가지고 있음-DB서버와의 연결
+        postgres_hook = PostgresHook(postgres_conn_id)
+        with closing(postgres_hook.get_conn()) as conn:
             with closing(conn.cursor()) as cursor:
                 dag_id = kwargs.get("ti").dag_id
                 task_id = kwargs.get('ti').task_id
@@ -26,7 +27,7 @@ with DAG(
     insrt_postgres = PythonOperator(
         task_id='insrt_postgres',
         python_callable=insrt_postgres,
-        op_args=['172.28.0.3', '5432', 'airflow_custom', 'airflow', 'airflow']
+        op_kwargs={'postgres_conn_id':'conn-db-postgres-custom'}
     )
 
     insrt_postgres
