@@ -12,7 +12,7 @@ with DAG(
     def insrt_postgres(ip, port, dbname, user, passwd, **kwargs):
         import psycopg2
         from contextlib import closing
-
+        #session 정보를 가지고 있음-DB서버와의 연결
         with closing(psycopg2.connect(host=ip, dbname=dbname, user=user, password=passwd, port=int(port))) as conn:
             with closing(conn.cursor()) as cursor:
                 dag_id = kwargs.get("ti").dag_id
@@ -26,7 +26,7 @@ with DAG(
     insrt_postgres = PythonOperator(
         task_id='insrt_postgres',
         python_callable=insrt_postgres,
-        op_args=['172.28.0.3', '5432', 'airflow_custom', 'airflow', 'airflow']
+        op_args=['172.28.0.3', '5432', 'airflow', 'id', 'pw']
     )
 
     insrt_postgres
